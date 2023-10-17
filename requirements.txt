@@ -1,0 +1,9 @@
+certifi==2023.7.22
+charset-normalizer==3.3.0
+idna==3.4
+ipaddr==2.2.0
+ipaddress==1.0.23
+packaging==23.2
+pynetbox==7.2.0
+requests==2.31.0
+urllib3==2.0.6
