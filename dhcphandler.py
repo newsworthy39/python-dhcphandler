@@ -33,6 +33,11 @@ class MyServer(BaseHTTPRequestHandler):
             v1_reservations(req)
 
         #   print(post_body)
+        reservations = "/api/v1/tenant/{}/interfaces".format(self.tenant_id)
+        if self.path.lower() == reservations:
+            v1_reservations(req)
+
+        #   print(post_body)
         ranges = "/api/v1/tenant/{}/ranges".format(self.tenant_id)
         if self.path.lower() == ranges:
             v1_ranges(req)
@@ -62,7 +67,7 @@ def main(argv):
          print ('test.py -t <tenantid> -b <bind> -p <prefix> -d <destination>')
          sys.exit()
       elif opt in ("-t", "--tenant"):
-         tenant = int(arg)
+         tenant = arg
       elif opt in ("-b", "--bind"):
          hostname, serverport = arg.split(":")
       elif opt in ("-p", "--prefix"):
@@ -72,11 +77,14 @@ def main(argv):
 
     # set class defaults
     MyServer.prefix = prefix
-    MyServer.tenant_id = tenant
     MyServer.nb = pynetbox.api(url=target,
-                    token='02c0dc3f1989ddebe6b776198d0e1d25987b73ad')
+                    token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
 
-    print("Listening {}:{} use API-endpoint:{} TenantID: {} Prefix: {}".format(hostname, serverport, target,tenant,prefix))
+    # translate the UUID to the local ID from SSOT.
+    nbtenant = MyServer.nb.tenancy.tenants.get(uuid=tenant)
+    MyServer.tenant_id = nbtenant.id
+
+    print("Listening {}:{} use API-endpoint:{} TenantUUID: {} tenantID: {} Prefix: {}".format(hostname, serverport, target, tenant, MyServer.tenant_id, prefix))
 
     server_address = (hostname, int(serverport))
     httpd = HTTPServer(server_address, MyServer)
