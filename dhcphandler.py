@@ -57,11 +57,11 @@ def main(argv):
     
     # optional arguments
     prefix = "10.10.10.10/32"
-    target = "http://10.0.92.150:8000"
+    target = "http://netbox.portfolio.cloud"
     tenant = 0
 
     # opts.
-    opts, args = getopt.getopt(argv,"ht:b:c:d",["tenant=","bind=","prefix=","destination="])
+    opts, args = getopt.getopt(argv,"ht:b:p:d:",["tenant=","bind=","prefix=","destination="])
     for opt, arg in opts:
       if opt == '-h':
          print ('test.py -t <tenantid> -b <bind> -p <prefix> -d <destination>')
@@ -72,13 +72,12 @@ def main(argv):
          hostname, serverport = arg.split(":")
       elif opt in ("-p", "--prefix"):
          prefix = arg
-      elif opt in ("-r", "--destination"):
+      elif opt in ("-d", "--destination"):
          target = arg
 
     # set class defaults
     MyServer.prefix = prefix
-    MyServer.nb = pynetbox.api(url=target,
-                    token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
+    MyServer.nb = pynetbox.api(url=target, token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
 
     # translate the UUID to the local ID from SSOT.
     nbtenant = MyServer.nb.tenancy.tenants.get(uuid=tenant)

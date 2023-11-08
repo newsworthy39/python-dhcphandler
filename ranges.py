@@ -35,30 +35,32 @@ def main(argv):
     
     # optional arguments
     prefix = "10.10.10.10/32"
-    target = "http://10.0.92.150:8000"
+    target = "http://netbox.portfolio.cloud"
     tenant = 0
 
     # opts.
-    opts, args = getopt.getopt(argv,"ht:b:c:d",["tenant=","bind=","prefix=","destination="])
+    opts, args = getopt.getopt(argv,"ht:p:d:",["tenant=","bind=","prefix=","destination="])
     for opt, arg in opts:
       if opt == '-h':
          print ('test.py -t <tenantid> -b <bind> -p <prefix> -d <destination>')
          sys.exit()
       elif opt in ("-t", "--tenant"):
-         tenant = int(arg)
-      elif opt in ("-b", "--bind"):
-         hostname = arg
+         tenant = arg
       elif opt in ("-p", "--prefix"):
          prefix = arg
-      elif opt in ("-r", "--destination"):
+      elif opt in ("-d", "--destination"):
          target = arg
 
+    # translate the UUID to the local ID from SSOT.
+    nbpy = pynetbox.api(url=target,token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
+    nbtenant = nbpy.tenancy.tenants.get(uuid=tenant).id
+
+    print("use API-endpoint:{} TenantUUID: {} tenantID: {} Prefix: {}".format(target, tenant, nbtenant, prefix))
+
     # create object
-    req = Request(nb = pynetbox.api(url=target,
-                    token='02c0dc3f1989ddebe6b776198d0e1d25987b73ad'),
-                   tenantid = tenant,
+    req = Request(nb = nbpy,
                    prefix = prefix,
-                   tenant = tenant)
+                   tenant_id = nbtenant)
     
     v1_ranges(req)
 
