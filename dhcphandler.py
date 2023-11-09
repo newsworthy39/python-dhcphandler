@@ -52,8 +52,8 @@ class MyServer(BaseHTTPRequestHandler):
 def main(argv):
 
     # bind-defaults, thx
-    serverport = 8081
-    hostname = "10.0.92.149"
+    serverport = 8080
+    hostname = "0.0.0.0"
     
     # optional arguments
     prefix = "10.10.10.10/32"
@@ -76,8 +76,9 @@ def main(argv):
          target = arg
 
     # set class defaults
+    import config
     MyServer.prefix = prefix
-    MyServer.nb = pynetbox.api(url=target, token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
+    MyServer.nb = pynetbox.api(url=config.target, token=config.token)
 
     # translate the UUID to the local ID from SSOT.
     nbtenant = MyServer.nb.tenancy.tenants.get(uuid=tenant)

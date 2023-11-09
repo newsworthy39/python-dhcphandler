@@ -29,7 +29,7 @@ def v1_reservations(req):
             client_hostname = address.dns_name.split(".")[0]
             client_mac = "52:52:52:52:52:52"
             client_dns = [ "10.0.92.38" ]
-            client_router = "192.168.56.1"
+            client_router = "192.168.57.1"
 
             # Find vif mac
             macs = req.nb.virtualization.interfaces.filter(name=address.assigned_object.name)
@@ -56,11 +56,7 @@ def v1_reservations(req):
 # Main
 def main(argv):
 
-    # bind-defaults, thx
-    serverport = 8081
-    hostname = "10.0.92.149"
-    
-    # optional arguments
+    # necessary arguments
     prefix = "10.10.10.10/32"
     target = "http://netbox.portfolio.cloud"
     tenant = 0
@@ -79,16 +75,16 @@ def main(argv):
          target = arg
 
     # translate the UUID to the local ID from SSOT.
-    nbpy = pynetbox.api(url=target,token='98e073778ad41232f12d2b4dd7dd0d445f173f59')
+    import config
+    nbpy = pynetbox.api(url=config.target,token=config.token)
     nbtenant = nbpy.tenancy.tenants.get(uuid=tenant).id
 
     print("use API-endpoint:{} TenantUUID: {} tenantID: {} Prefix: {}".format(target, tenant, nbtenant, prefix))
 
     # create object
-    req = Request(nb = nbpy,
-                   prefix = prefix,
-                   tenant_id = nbtenant)
-    
+    req = Request(nb = nbpy,prefix = prefix,tenant_id = nbtenant)
+
+    # reservations
     v1_reservations(req)
 
 if __name__ == "__main__":
